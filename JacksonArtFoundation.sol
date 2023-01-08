@@ -354,12 +354,7 @@ contract JacksonArtFoundation is
             _isTokenOwner(erc721Address, tokenId, msg.sender),
             "Only token owner can accept bid of token"
         );
-        require(
-            _isTokenApproved(erc721Address, tokenId) ||
-                _isAllTokenApproved(erc721Address, msg.sender),
-            "The token is not approved to transfer by the contract"
-        );
-
+      
         Bid memory existingBid = getBidderTokenBid(
             erc721Address,
             tokenId,
