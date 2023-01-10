@@ -95,8 +95,7 @@ contract JacksonArtFoundation is
         onlyAllowedExpireTimestamp(expireTimestamp)
     {
         IERC721 nftTokenContract = IERC721(erc721Address);
-        require(nftTokenContract.getApproved(tokenId) == address(this), "Contract not approved to take NFT. Approve the contract first.");
-
+        require(nftTokenContract.getApproved(tokenId) == address(this) || _isAllTokenApproved(erc721Address, msg.sender) ,"Contract not approved to take NFT. Approve the contract first.");
            Listing memory listing = Listing({
             tokenId: tokenId,
             value: value,
@@ -172,7 +171,7 @@ contract JacksonArtFoundation is
             "Only token seller can change token price"
         );
         require(
-            _isListingValidForBuy(erc721Address, listing),
+            _isListingValidForBuy(listing),
             "Token is not for sale"
         );
         require(msg.value>0,"Price not be zero");
@@ -239,7 +238,7 @@ contract JacksonArtFoundation is
     {
         Listing memory listing = _erc721Market[erc721Address].listings[tokenId];
         require(
-            _isListingValidForBuy(erc721Address, listing),
+            _isListingValidForBuy(listing),
             "Token is not for sale"
         );
         require(
@@ -431,7 +430,7 @@ contract JacksonArtFoundation is
         returns (Listing memory validListing)
     {
         Listing memory listing = _erc721Market[erc721Address].listings[tokenId];
-        if (_isListingValidForBuy(erc721Address, listing)) {
+        if (_isListingValidForBuy(listing)) {
             validListing = listing;
         }
     }
@@ -471,7 +470,7 @@ contract JacksonArtFoundation is
                 Listing memory listing = _erc721Market[erc721Address].listings[
                     tokenId
                 ];
-                if (_isListingValidForBuy(erc721Address, listing)) {
+                if (_isListingValidForBuy(listing)) {
                     listings[i] = listing;
                 }
             }
@@ -683,7 +682,7 @@ contract JacksonArtFoundation is
         }
     }
 
-  function _isListingValidForBuy(address erc721Address, Listing memory listing)
+  function _isListingValidForBuy(Listing memory listing)
         private 
         view
         returns (bool isValid)
